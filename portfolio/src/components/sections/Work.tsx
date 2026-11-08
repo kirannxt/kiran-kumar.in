@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { PROJECTS } from "@/lib/data";
 
-const PANEL_COLORS = ["#f0ede8", "#edf0f8", "#edf8ee", "#f8edf0", "#f5edfb"];
+const PANEL_COLORS = ["#13102a", "#0e1a2e", "#0e1a16", "#1a0e1a", "#12101e"];
 
 function IllustrativeUI({ id }: { id: string }) {
   const designs: Record<string, React.ReactNode> = {
@@ -12,7 +12,7 @@ function IllustrativeUI({ id }: { id: string }) {
           <div
             key={t}
             style={{
-              background: "#fff",
+              background: "rgba(255,255,255,0.07)",
               borderRadius: 8,
               padding: "8px 12px",
               fontSize: "0.7rem",
@@ -31,7 +31,7 @@ function IllustrativeUI({ id }: { id: string }) {
           <div
             key={t}
             style={{
-              background: "#fff",
+              background: "rgba(255,255,255,0.07)",
               borderRadius: 8,
               padding: "8px 6px",
               fontSize: "0.65rem",
@@ -49,7 +49,7 @@ function IllustrativeUI({ id }: { id: string }) {
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         <div
           style={{
-            background: "#fff",
+            background: "rgba(255,255,255,0.07)",
             borderRadius: 8,
             padding: "8px 12px",
             display: "flex",
@@ -61,7 +61,7 @@ function IllustrativeUI({ id }: { id: string }) {
           <span>Patient Casebook</span>
           <span
             style={{
-              background: "#e9e6e0",
+              background: "rgba(255,255,255,0.1)",
               borderRadius: 4,
               padding: "2px 6px",
             }}
@@ -74,7 +74,7 @@ function IllustrativeUI({ id }: { id: string }) {
             <div
               key={t}
               style={{
-                background: "#fff",
+                background: "rgba(255,255,255,0.07)",
                 borderRadius: 6,
                 padding: "6px",
                 fontSize: "0.6rem",
@@ -95,7 +95,7 @@ function IllustrativeUI({ id }: { id: string }) {
           <div
             key={t}
             style={{
-              background: "#fff",
+              background: "rgba(255,255,255,0.07)",
               borderRadius: 8,
               padding: "8px 12px",
               fontSize: "0.68rem",
@@ -114,7 +114,7 @@ function IllustrativeUI({ id }: { id: string }) {
       <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         <div
           style={{
-            background: "#fff",
+            background: "rgba(255,255,255,0.07)",
             borderRadius: 8,
             padding: "8px 12px",
             fontSize: "0.65rem",
@@ -129,7 +129,7 @@ function IllustrativeUI({ id }: { id: string }) {
             <div
               key={t}
               style={{
-                background: "#fff",
+                background: "rgba(255,255,255,0.07)",
                 borderRadius: 6,
                 padding: "6px 4px",
                 fontSize: "0.55rem",
@@ -343,7 +343,7 @@ export default function Work() {
                               fontSize: "0.7rem",
                               padding: "0.25rem 0.6rem",
                               borderRadius: "999px",
-                              background: "rgba(13,13,13,0.06)",
+                              background: "rgba(255,255,255,0.08)",
                               fontFamily: "'JetBrains Mono', monospace",
                             }}
                           >
@@ -367,7 +367,7 @@ export default function Work() {
                     {/* Right: illustrative UI */}
                     <div
                       style={{
-                        background: "rgba(255,255,255,0.5)",
+                        background: "rgba(255,255,255,0.04)",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",

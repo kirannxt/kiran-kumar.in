@@ -214,9 +214,9 @@ function IDCard() {
                   }}
                 >
                   {[
-                    ["ID No.", "KK-2018-001"],
+                    // ["ID No.", "KK-2018-001"],
                     ["Dept.", "Engineering"],
-                    ["Valid till", "2018"],
+                    // ["Valid till", "2018"],
                     ["Exp.", "8+ Years"],
                   ].map(([k, v]) => (
                     <div

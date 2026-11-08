@@ -147,7 +147,7 @@ export default function Navigation() {
             alignItems: "center",
             gap: "0.2rem",
             background: scrolled
-              ? "rgba(244,242,238,0.85)"
+              ? "rgba(10, 6, 18, 0.85)"
               : "transparent",
             backdropFilter: scrolled ? "blur(12px)" : "none",
             borderRadius: "999px",
@@ -190,7 +190,7 @@ export default function Navigation() {
             padding: "0.5rem 1rem",
             borderRadius: "999px",
             border: "1px solid var(--line)",
-            background: "rgba(244,242,238,0.85)",
+            background: "rgba(10, 6, 18, 0.85)",
             backdropFilter: "blur(12px)",
             fontSize: "0.85rem",
             fontWeight: 600,
