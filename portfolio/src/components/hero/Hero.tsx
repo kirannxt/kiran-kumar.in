@@ -42,7 +42,7 @@ export default function Hero() {
             fontWeight: 800,
             letterSpacing: "-0.06em",
             color: "transparent",
-            WebkitTextStroke: "1px rgba(13,13,13,0.06)",
+            WebkitTextStroke: "1px rgba(240,236,255,0.06)",
             lineHeight: 1,
             whiteSpace: "nowrap",
           }}
@@ -336,7 +336,7 @@ export default function Hero() {
               whiteSpace: "nowrap",
             }}
           >
-            &lt;/&gt; 8+ yrs experience
+           8+ yrs experience
           </div>
 
           {/* Floating badge 2 */}
