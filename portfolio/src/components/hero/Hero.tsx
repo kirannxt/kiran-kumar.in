@@ -115,7 +115,7 @@ export default function Hero() {
             download
             aria-label="Download résumé PDF"
           >
-            Résumé ↓
+            Resume ↓
           </a>
         </div>
 

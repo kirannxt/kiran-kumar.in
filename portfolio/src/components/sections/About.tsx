@@ -374,7 +374,7 @@ export default function About() {
             </p>
             <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
               <a className="btn-primary" href={PROFILE.resumePath} download>
-                Résumé ↓
+                Resume ↓
               </a>
               <a
                 className="btn-outline"
