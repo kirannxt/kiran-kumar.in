@@ -59,7 +59,7 @@ function IDCard() {
         style={{
           width: 30,
           height: 56,
-          background: "linear-gradient(180deg, #1a1a1a 0%, #3a3a3a 100%)",
+          background: "linear-gradient(180deg, #2a1f42 0%, #4a3a6a 100%)",
           borderRadius: "4px 4px 0 0",
           display: "flex",
           alignItems: "center",
@@ -88,7 +88,7 @@ function IDCard() {
         style={{
           width: 22,
           height: 12,
-          background: "#9a9a9a",
+          background: "#6a5a8a",
           borderRadius: "2px",
           boxShadow: "inset 0 1px 2px rgba(255,255,255,0.4)",
         }}
@@ -128,9 +128,9 @@ function IDCard() {
                 position: "absolute",
                 inset: 0,
                 backfaceVisibility: "hidden",
-                background: "#fff",
+                background: "var(--card)",
                 borderRadius: 16,
-                boxShadow: "0 12px 48px rgba(13,13,13,0.15)",
+                boxShadow: "0 12px 48px rgba(0,0,0,0.5)",
                 overflow: "hidden",
                 display: "flex",
                 flexDirection: "column",
@@ -167,7 +167,7 @@ function IDCard() {
                     width: 100,
                     height: 122,
                     borderRadius: 12,
-                    background: "linear-gradient(135deg, #e9e6e0, #d0cdc8)",
+                    background: "linear-gradient(135deg, #1a1328, #2a1f42)",
                     border: "3px solid var(--soft)",
                     display: "flex",
                     alignItems: "center",
@@ -282,9 +282,9 @@ function IDCard() {
                 inset: 0,
                 backfaceVisibility: "hidden",
                 transform: "rotateY(180deg)",
-                background: "#fff",
+                background: "var(--card)",
                 borderRadius: 16,
-                boxShadow: "0 12px 48px rgba(13,13,13,0.15)",
+                boxShadow: "0 12px 48px rgba(0,0,0,0.5)",
                 padding: "1.5rem 1.2rem",
                 display: "flex",
                 flexDirection: "column",
@@ -334,6 +334,11 @@ function IDCard() {
         @keyframes strapScroll {
           0%   { transform: translateY(0); }
           100% { transform: translateY(-50%); }
+        }
+        @media (max-width: 640px) {
+          #about .container > div {
+            grid-template-columns: 1fr !important;
+          }
         }
       `}</style>
     </div>

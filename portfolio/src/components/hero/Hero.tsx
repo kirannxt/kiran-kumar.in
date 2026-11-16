@@ -321,6 +321,7 @@ export default function Hero() {
 
           {/* Floating badge */}
           <div
+            className="hero-badge-1"
             style={{
               position: "absolute",
               top: "12%",
@@ -341,6 +342,7 @@ export default function Hero() {
 
           {/* Floating badge 2 */}
           <div
+            className="hero-badge-2"
             style={{
               position: "absolute",
               bottom: "18%",
@@ -397,6 +399,8 @@ export default function Hero() {
           #hero > div:last-of-type {
             min-height: 50svh !important;
           }
+          #hero .hero-badge-1 { right: 0.5rem !important; }
+          #hero .hero-badge-2 { left: 0.5rem !important; }
         }
       `}</style>
     </section>
