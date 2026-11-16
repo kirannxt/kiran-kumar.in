@@ -19,12 +19,11 @@ export const PROFILE = {
 };
 
 export const NAV = [
-  { label: "About",        href: "#about" },
-  { label: "Skills",       href: "#skills" },
-  { label: "Work",         href: "#work" },
-  { label: "Experience",   href: "#experience" },
-  { label: "Achievements", href: "#achievements" },
-  { label: "Contact",      href: "#contact" },
+  { label: "About",      href: "#about" },
+  { label: "Skills",     href: "#skills" },
+  { label: "Work",       href: "#work" },
+  { label: "Experience", href: "#experience" },
+  { label: "Contact",    href: "#contact" },
 ];
 
 // ─── SKILLS ──────────────────────────────────────────────────────────────────

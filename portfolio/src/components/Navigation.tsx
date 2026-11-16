@@ -262,16 +262,6 @@ export default function Navigation() {
             >
               <span
                 style={{
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: "0.72rem",
-                  color: "var(--mute)",
-                  minWidth: "2rem",
-                }}
-              >
-                0{i + 1}
-              </span>
-              <span
-                style={{
                   fontSize: "clamp(1.4rem, 6vw, 3rem)",
                   fontWeight: 800,
                   letterSpacing: "-0.04em",
