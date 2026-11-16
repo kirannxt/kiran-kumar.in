@@ -127,6 +127,7 @@ export default function Navigation() {
             KK
           </button>
           <span
+            className="nav-name"
             style={{
               fontSize: "0.88rem",
               fontWeight: 600,
@@ -271,7 +272,7 @@ export default function Navigation() {
               </span>
               <span
                 style={{
-                  fontSize: "clamp(1.8rem, 8vw, 3.5rem)",
+                  fontSize: "clamp(1.4rem, 6vw, 3rem)",
                   fontWeight: 800,
                   letterSpacing: "-0.04em",
                 }}
@@ -289,6 +290,7 @@ export default function Navigation() {
         }
         @media (max-width: 767px) {
           .desktop-nav { display: none !important; }
+          .nav-name { display: none !important; }
         }
       `}</style>
     </>
