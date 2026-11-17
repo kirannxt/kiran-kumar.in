@@ -68,9 +68,9 @@ function SpinBadge() {
 }
 
 // ─── Contact form ─────────────────────────────────────────────────────────────
-// Replace FORMSPREE_ID with your form ID from https://formspree.io
-// e.g. if your endpoint is https://formspree.io/f/abcdefgh  →  "abcdefgh"
-const FORMSPREE_ID = "YOUR_FORM_ID";
+// This portfolio is deployed as a static export, so contact delivery
+// uses FormSubmit's hosted endpoint instead of a server-side mail API.
+const FORM_ENDPOINT = `https://formsubmit.co/ajax/${PROFILE.email}`;
 
 type FormState = "idle" | "sending" | "success" | "error";
 
@@ -82,13 +82,19 @@ function ContactForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !email || !message) return;
+    if (!name.trim() || !email.trim() || !message.trim()) return;
     setStatus("sending");
     try {
-      const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+      const res = await fetch(FORM_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          _replyto: email.trim(),
+          message: message.trim(),
+          _subject: `Portfolio message from ${name.trim()}`,
+        }),
       });
       if (res.ok) {
         setStatus("success");
@@ -163,7 +169,6 @@ function ContactForm() {
         flexDirection: "column",
         gap: "1.2rem",
       }}
-      noValidate
     >
       {/* Row: name + email */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }} className="form-row">
@@ -215,7 +220,7 @@ function ContactForm() {
 
       {/* Error */}
       {status === "error" && (
-        <p style={{ fontSize: "0.85rem", color: "#f87171", marginTop: "-0.5rem" }}>
+        <p role="alert" style={{ fontSize: "0.85rem", color: "#f87171", marginTop: "-0.5rem" }}>
           Something went wrong. Try emailing me directly at{" "}
           <a href={`mailto:${PROFILE.email}`} style={{ textDecoration: "underline" }}>
             {PROFILE.email}
