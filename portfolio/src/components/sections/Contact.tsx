@@ -396,7 +396,7 @@ export default function Contact() {
       <style>{`
         input::placeholder, textarea::placeholder { color: var(--faint); }
         input:focus, textarea:focus { outline: none; }
-        .contact-form { width: min(100%, 560px); }
+        .contact-form { width: min(100%, 560px); margin-inline: auto; }
         .contact-form-row {
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
