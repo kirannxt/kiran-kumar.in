@@ -115,11 +115,13 @@ function ContactForm() {
 
   const inputStyle: React.CSSProperties = {
     width: "100%",
+    minWidth: 0,
+    boxSizing: "border-box",
     background: "var(--soft)",
     border: "1px solid var(--line)",
     borderRadius: 12,
     padding: "0.85rem 1rem",
-    fontSize: "0.95rem",
+    fontSize: "16px",
     color: "var(--ink)",
     fontFamily: "inherit",
     outline: "none",
@@ -176,6 +178,7 @@ function ContactForm() {
       )}
 
       <form
+      className="contact-form"
       onSubmit={handleSubmit}
       style={{
         width: "100%",
@@ -186,10 +189,11 @@ function ContactForm() {
       }}
     >
       {/* Row: name + email */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }} className="form-row">
-        <div>
+      <div className="contact-form-row">
+        <div className="contact-form-field">
           <label htmlFor="contact-name" style={labelStyle}>Name</label>
           <input
+            className="contact-form-control"
             id="contact-name"
             type="text"
             required
@@ -201,9 +205,10 @@ function ContactForm() {
             onBlur={(e)  => (e.currentTarget.style.borderColor = "var(--line)")}
           />
         </div>
-        <div>
+        <div className="contact-form-field">
           <label htmlFor="contact-email" style={labelStyle}>Email</label>
           <input
+            className="contact-form-control"
             id="contact-email"
             type="email"
             required
@@ -221,6 +226,7 @@ function ContactForm() {
       <div>
         <label htmlFor="contact-message" style={labelStyle}>Message</label>
         <textarea
+          className="contact-form-control"
           id="contact-message"
           required
           rows={5}
@@ -247,7 +253,7 @@ function ContactForm() {
         type="submit"
         className="btn-primary"
         disabled={status === "sending"}
-        style={{ alignSelf: "flex-start", opacity: status === "sending" ? 0.6 : 1 }}
+        style={{ opacity: status === "sending" ? 0.6 : 1 }}
       >
         {status === "sending" ? "Sending…" : "Send message →"}
       </button>
@@ -390,8 +396,21 @@ export default function Contact() {
       <style>{`
         input::placeholder, textarea::placeholder { color: var(--faint); }
         input:focus, textarea:focus { outline: none; }
+        .contact-form { width: min(100%, 560px); }
+        .contact-form-row {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 1rem;
+        }
+        .contact-form-field { min-width: 0; }
+        .contact-form-control { width: 100%; min-width: 0; max-width: 100%; }
+        .contact-form > .btn-primary { align-self: flex-start; }
+        @media (max-width: 640px) {
+          .contact-form-row { grid-template-columns: minmax(0, 1fr); }
+          .contact-form { gap: 1rem !important; }
+        }
         @media (max-width: 480px) {
-          .form-row { grid-template-columns: 1fr !important; }
+          .contact-form > .btn-primary { align-self: stretch; justify-content: center; }
         }
       `}</style>
     </section>
