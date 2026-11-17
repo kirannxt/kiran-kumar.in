@@ -3,12 +3,21 @@ import { useState } from "react";
 import { SKILL_GROUPS, SKILL_FAMILIES, type Skill, type SkillFamily } from "@/lib/data";
 
 const FAMILY_COLORS: Record<SkillFamily, string> = {
-  Frontend:  "#e8f4fd",
-  Backend:   "#fdf3e8",
-  Databases: "#edf8ee",
-  Cloud:     "#f5edfb",
-  Tools:     "#fdf9e8",
-  Languages: "#fde8e8",
+  Frontend:  "#1a2a3a",
+  Backend:   "#2a1f10",
+  Databases: "#0f2a12",
+  Cloud:     "#1f1030",
+  Tools:     "#2a2510",
+  Languages: "#2a1010",
+};
+
+const FAMILY_BORDER_COLORS: Record<SkillFamily, string> = {
+  Frontend:  "#4a9edd",
+  Backend:   "#dd9a4a",
+  Databases: "#4add6a",
+  Cloud:     "#9a4add",
+  Tools:     "#ddcf4a",
+  Languages: "#dd4a4a",
 };
 
 function SkillTile({
@@ -35,7 +44,7 @@ function SkillTile({
             ? FAMILY_COLORS[skill.family]
             : "var(--card)",
           border: active
-            ? `1.5px solid ${FAMILY_COLORS[skill.family]}`
+            ? `1.5px solid ${FAMILY_BORDER_COLORS[skill.family]}`
             : "1px solid var(--line)",
           borderRadius: 12,
           padding: "0.6rem 0.5rem",
@@ -127,7 +136,7 @@ export default function Skills() {
                 border: "1px solid var(--line)",
                 background:
                   activeFamily === f
-                    ? FAMILY_COLORS[f]
+                    ? FAMILY_BORDER_COLORS[f]
                     : "transparent",
                 transition: "all 0.2s var(--ease)",
               }}
@@ -138,6 +147,7 @@ export default function Skills() {
         </div>
 
         <div
+          className="skills-layout"
           style={{
             display: "grid",
             gridTemplateColumns: "1fr auto",
@@ -173,6 +183,7 @@ export default function Skills() {
 
           {/* Inspector panel */}
           <div
+            className="skills-inspector"
             style={{
               width: "clamp(180px, 22vw, 280px)",
               position: "sticky",
@@ -250,6 +261,17 @@ export default function Skills() {
           </div>
         </div>
       </div>
+      <style>{`
+        @media (max-width: 640px) {
+          .skills-layout {
+            grid-template-columns: 1fr !important;
+          }
+          .skills-inspector {
+            width: 100% !important;
+            position: static !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

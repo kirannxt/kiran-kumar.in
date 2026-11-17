@@ -44,7 +44,7 @@ export default function Experience() {
           <span className="serif-accent">so far.</span>
         </h2>
 
-        <div style={{ display: "grid", gridTemplateColumns: "80px 1fr", gap: "0 2rem" }}>
+        <div className="timeline-grid" style={{ display: "grid", gridTemplateColumns: "80px 1fr", gap: "0 2rem" }}>
           {/* Spine */}
           <div style={{ position: "relative", gridRow: `1 / ${TIMELINE.length + 2}` }}>
             <div
@@ -227,6 +227,14 @@ export default function Experience() {
           </div>
         </div>
       </div>
+      <style>{`
+        @media (max-width: 640px) {
+          #experience .timeline-grid {
+            grid-template-columns: 32px 1fr !important;
+            gap: 0 1rem !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

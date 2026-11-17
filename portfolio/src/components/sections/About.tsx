@@ -59,7 +59,7 @@ function IDCard() {
         style={{
           width: 30,
           height: 56,
-          background: "linear-gradient(180deg, #1a1a1a 0%, #3a3a3a 100%)",
+          background: "linear-gradient(180deg, #2a1f42 0%, #4a3a6a 100%)",
           borderRadius: "4px 4px 0 0",
           display: "flex",
           alignItems: "center",
@@ -88,7 +88,7 @@ function IDCard() {
         style={{
           width: 22,
           height: 12,
-          background: "#9a9a9a",
+          background: "#6a5a8a",
           borderRadius: "2px",
           boxShadow: "inset 0 1px 2px rgba(255,255,255,0.4)",
         }}
@@ -111,6 +111,7 @@ function IDCard() {
             height: 378,
             perspective: "1000px",
           }}
+          className="id-card-wrap"
         >
           <div
             style={{
@@ -128,9 +129,9 @@ function IDCard() {
                 position: "absolute",
                 inset: 0,
                 backfaceVisibility: "hidden",
-                background: "#fff",
+                background: "var(--card)",
                 borderRadius: 16,
-                boxShadow: "0 12px 48px rgba(13,13,13,0.15)",
+                boxShadow: "0 12px 48px rgba(0,0,0,0.5)",
                 overflow: "hidden",
                 display: "flex",
                 flexDirection: "column",
@@ -167,7 +168,7 @@ function IDCard() {
                     width: 100,
                     height: 122,
                     borderRadius: 12,
-                    background: "linear-gradient(135deg, #e9e6e0, #d0cdc8)",
+                    background: "linear-gradient(135deg, #1a1328, #2a1f42)",
                     border: "3px solid var(--soft)",
                     display: "flex",
                     alignItems: "center",
@@ -176,6 +177,7 @@ function IDCard() {
                     boxShadow: "0 4px 16px rgba(13,13,13,0.1)",
                   }}
                   aria-label="Portrait placeholder"
+                  className="id-card-portrait"
                 >
                   👨‍💻
                 </div>
@@ -187,6 +189,7 @@ function IDCard() {
                       fontSize: "1rem",
                       letterSpacing: "-0.02em",
                     }}
+                    className="id-card-name"
                   >
                     {PROFILE.name}
                   </div>
@@ -196,6 +199,7 @@ function IDCard() {
                       color: "var(--mute)",
                       fontFamily: "'JetBrains Mono', monospace",
                     }}
+                    className="id-card-role"
                   >
                     {PROFILE.role}
                   </div>
@@ -212,6 +216,7 @@ function IDCard() {
                     borderTop: "1px solid var(--line)",
                     paddingTop: "0.6rem",
                   }}
+                  className="id-card-row"
                 >
                   {[
                     // ["ID No.", "KK-2018-001"],
@@ -282,9 +287,9 @@ function IDCard() {
                 inset: 0,
                 backfaceVisibility: "hidden",
                 transform: "rotateY(180deg)",
-                background: "#fff",
+                background: "var(--card)",
                 borderRadius: 16,
-                boxShadow: "0 12px 48px rgba(13,13,13,0.15)",
+                boxShadow: "0 12px 48px rgba(0,0,0,0.5)",
                 padding: "1.5rem 1.2rem",
                 display: "flex",
                 flexDirection: "column",
@@ -309,7 +314,7 @@ function IDCard() {
                 `GeneSilico · POD Health · LMS · QBSCare · Mavvrik`,
                 `Cloud-deployed on Firebase, AWS & Heroku`,
               ].map((line, i) => (
-                <p key={i} style={{ fontSize: "0.82rem", lineHeight: 1.5, color: "var(--ink-2)" }}>
+                <p key={i} style={{ fontSize: "0.82rem", lineHeight: 1.5, color: "var(--ink-2)" }} className="id-card-back-line">
                   {line}
                 </p>
               ))}
@@ -322,6 +327,7 @@ function IDCard() {
                   color: "var(--mute)",
                   fontFamily: "'JetBrains Mono', monospace",
                 }}
+                className="id-card-back-footer"
               >
                 If found, say hello · {PROFILE.email}
               </div>
@@ -334,6 +340,21 @@ function IDCard() {
         @keyframes strapScroll {
           0%   { transform: translateY(0); }
           100% { transform: translateY(-50%); }
+        }
+        @media (max-width: 640px) {
+          #about .container > div {
+            grid-template-columns: 1fr !important;
+          }
+          .id-card-wrap {
+            width: 240px !important;
+            height: 324px !important;
+          }
+          .id-card-name { font-size: 0.88rem !important; }
+          .id-card-role { font-size: 0.65rem !important; }
+          .id-card-row  { font-size: 0.65rem !important; }
+          .id-card-back-line { font-size: 0.75rem !important; }
+          .id-card-back-footer { font-size: 0.65rem !important; }
+          .id-card-portrait { width: 80px !important; height: 98px !important; font-size: 2.2rem !important; }
         }
       `}</style>
     </div>
