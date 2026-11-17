@@ -8,8 +8,6 @@ export const PROFILE = {
   role: "Software Engineer",
   roleAlt: "Full Stack Developer",
   email: "kiran.nxt19@gmail.com",
-  phone: "9738370501",
-  phoneHref: "tel:+919738370501",
   location: "India",
   github: "",          // not present in résumé
   linkedin: "",        // not present in résumé

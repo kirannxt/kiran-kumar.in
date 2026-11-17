@@ -445,7 +445,6 @@ export default function About() {
                 ["Education", "MCA · Gulbarga University, 2018"],
                 ["Current role", `${PROFILE.role} · MindsNXT TechnoVision`],
                 ["Email", PROFILE.email],
-                ["Phone", PROFILE.phone],
               ].map(([k, v]) => (
                 <div
                   key={k}
@@ -473,8 +472,6 @@ export default function About() {
                       <a href={`mailto:${v}`} style={{ textDecoration: "underline" }}>
                         {v}
                       </a>
-                    ) : k === "Phone" ? (
-                      <a href={PROFILE.phoneHref}>{v}</a>
                     ) : (
                       v
                     )}

@@ -355,12 +355,6 @@ export default function Contact() {
             </button>
           </div>
 
-          {/* Phone */}
-          <div className="rv" style={{ "--i": 4 } as React.CSSProperties}>
-            <a href={PROFILE.phoneHref} style={{ fontSize: "1rem", fontWeight: 600, color: "var(--mute)" }}>
-              {PROFILE.phone}
-            </a>
-          </div>
         </div>
       </div>
 
