@@ -80,6 +80,12 @@ function ContactForm() {
   const [message, setMessage] = useState("");
   const [status, setStatus]   = useState<FormState>("idle");
 
+  useEffect(() => {
+    if (status !== "success") return;
+    const timeout = window.setTimeout(() => setStatus("idle"), 30_000);
+    return () => window.clearTimeout(timeout);
+  }, [status]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim() || !message.trim()) return;
@@ -130,37 +136,46 @@ function ContactForm() {
     marginBottom: "0.4rem",
   };
 
-  if (status === "success") {
-    return (
-      <div
-        style={{
-          textAlign: "center",
-          padding: "3rem 2rem",
-          border: "1px solid var(--line)",
-          borderRadius: 20,
-          background: "var(--card)",
-        }}
-      >
-        <div style={{ fontSize: "2.5rem", marginBottom: "1rem" }}>✓</div>
-        <div style={{ fontWeight: 700, fontSize: "1.1rem", marginBottom: "0.5rem" }}>
-          Message sent!
-        </div>
-        <p style={{ color: "var(--mute)", fontSize: "0.9rem" }}>
-          I'll get back to you at <strong style={{ color: "var(--ink)" }}>{PROFILE.email}</strong> shortly.
-        </p>
-        <button
-          className="btn-outline"
-          style={{ marginTop: "1.5rem", fontSize: "0.85rem" }}
-          onClick={() => setStatus("idle")}
-        >
-          Send another
-        </button>
-      </div>
-    );
-  }
-
   return (
-    <form
+    <>
+      {status === "success" && (
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            position: "fixed",
+            top: 24,
+            right: 24,
+            zIndex: 1000,
+            width: "min(360px, calc(100vw - 32px))",
+            padding: "1rem 1.25rem",
+            border: "1px solid var(--line)",
+            borderRadius: 16,
+            background: "var(--card)",
+            boxShadow: "0 16px 48px rgba(0, 0, 0, 0.3)",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "flex-start", gap: "0.8rem" }}>
+            <span aria-hidden="true" style={{ color: "#86efac", fontSize: "1.2rem", lineHeight: 1 }}>✓</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 700, marginBottom: "0.25rem" }}>Message sent!</div>
+              <div style={{ color: "var(--mute)", fontSize: "0.85rem" }}>
+                I&apos;ll get back to you at <strong style={{ color: "var(--ink)" }}>{PROFILE.email}</strong> shortly.
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => setStatus("idle")}
+              aria-label="Dismiss notification"
+              style={{ color: "var(--mute)", fontSize: "1.1rem", lineHeight: 1 }}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
+      <form
       onSubmit={handleSubmit}
       style={{
         width: "100%",
@@ -236,7 +251,8 @@ function ContactForm() {
       >
         {status === "sending" ? "Sending…" : "Send message →"}
       </button>
-    </form>
+      </form>
+    </>
   );
 }
 
