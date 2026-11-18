@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+portfolio/node_modules/
+
+# Production builds
+.next/
+portfolio/.next/
+out/
+portfolio/out/
+
+# TypeScript cache
+*.tsbuildinfo
+portfolio/tsconfig.tsbuildinfo
+
+# Local tooling & scratch
+.playwright-mcp/
+Microsoft/

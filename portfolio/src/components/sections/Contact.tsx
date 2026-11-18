@@ -1,56 +1,49 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import { PROFILE } from "@/lib/data";
-
-function HopText({ text }: { text: string }) {
-  return (
-    <span aria-label={text} style={{ display: "inline-flex", flexWrap: "wrap" }}>
-      {text.split("").map((ch, i) =>
-        ch === " " ? (
-          <span key={i} style={{ width: "0.3em" }} />
-        ) : (
-          <span
-            key={i}
-            style={{ display: "inline-block", transition: "transform 0.2s var(--ease)" }}
-            onMouseEnter={(e) =>
-              ((e.currentTarget as HTMLSpanElement).style.transform = "translateY(-8px)")
-            }
-            onMouseLeave={(e) =>
-              ((e.currentTarget as HTMLSpanElement).style.transform = "none")
-            }
-          >
-            {ch}
-          </span>
-        )
-      )}
-    </span>
-  );
-}
 
 function SpinBadge() {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     let angle = 0;
     const raf = setInterval(() => {
-      angle += 0.4;
+      angle += 0.35;
       if (ref.current) ref.current.style.transform = `rotate(${angle}deg)`;
     }, 16);
     return () => clearInterval(raf);
   }, []);
 
-  const text = "say hello · kiran kumar · get in touch · ";
+  const text = "say hello · get in touch · kiran · ";
+  const chars = text.split("");
+  const total = chars.length;
+
   return (
-    <div ref={ref} aria-hidden style={{ width: 120, height: 120, position: "relative" }}>
-      <svg viewBox="0 0 120 120" width="120" height="120">
-        <path
-          id="circle-path"
-          d="M 60,60 m -42,0 a 42,42 0 1,1 84,0 a 42,42 0 1,1 -84,0"
-          fill="none"
-        />
-        <text fontSize="9" fontFamily="'JetBrains Mono', monospace" fill="var(--mute)" letterSpacing="2">
-          <textPath href="#circle-path">{text}</textPath>
-        </text>
-      </svg>
+    <div style={{ width: 120, height: 120, position: "relative" }} aria-hidden>
+      {/* Spinning Ring */}
+      <div ref={ref} style={{ position: "absolute", inset: 0 }}>
+        {chars.map((ch, i) => (
+          <span
+            key={i}
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: "8px",
+              fontWeight: 600,
+              color: "var(--ink-2)",
+              transform: `rotate(${(i / total) * 360}deg) translateY(-46px)`,
+              transformOrigin: "0 0",
+              lineHeight: 1,
+              whiteSpace: "pre",
+            }}
+          >
+            {ch}
+          </span>
+        ))}
+      </div>
+      {/* Centre Emoji with Ambient Halo */}
       <div
         style={{
           position: "absolute",
@@ -58,7 +51,8 @@ function SpinBadge() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          fontSize: "1.5rem",
+          fontSize: "1.6rem",
+          filter: "drop-shadow(0 0 12px rgba(14, 165, 233, 0.45))",
         }}
       >
         👋
@@ -68,8 +62,6 @@ function SpinBadge() {
 }
 
 // ─── Contact form ─────────────────────────────────────────────────────────────
-// This portfolio is deployed as a static export, so contact delivery
-// uses FormSubmit's hosted endpoint instead of a server-side mail API.
 const FORM_ENDPOINT = `https://formsubmit.co/ajax/${PROFILE.email}`;
 
 type FormState = "idle" | "sending" | "success" | "error";
@@ -79,10 +71,15 @@ function ContactForm() {
   const [email, setEmail]     = useState("");
   const [message, setMessage] = useState("");
   const [status, setStatus]   = useState<FormState>("idle");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (status !== "success") return;
-    const timeout = window.setTimeout(() => setStatus("idle"), 30_000);
+    const timeout = window.setTimeout(() => setStatus("idle"), 15_000);
     return () => window.clearTimeout(timeout);
   }, [status]);
 
@@ -117,152 +114,212 @@ function ContactForm() {
     width: "100%",
     minWidth: 0,
     boxSizing: "border-box",
-    background: "var(--soft)",
-    border: "1px solid var(--line)",
-    borderRadius: 12,
-    padding: "0.85rem 1rem",
-    fontSize: "16px",
+    background: "rgba(13, 22, 42, 0.85)",
+    border: "1px solid rgba(125, 211, 252, 0.16)",
+    borderRadius: 14,
+    padding: "0.9rem 1.15rem",
+    fontSize: "15px",
     color: "var(--ink)",
     fontFamily: "inherit",
     outline: "none",
-    transition: "border-color 0.2s var(--ease)",
+    transition: "border-color 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s var(--ease)",
   };
 
   const labelStyle: React.CSSProperties = {
     display: "block",
     fontFamily: "'JetBrains Mono', monospace",
-    fontSize: "0.65rem",
-    letterSpacing: "0.1em",
+    fontSize: "0.72rem",
+    letterSpacing: "0.08em",
     textTransform: "uppercase",
-    color: "var(--mute)",
-    marginBottom: "0.4rem",
+    color: "var(--ink-2)",
+    marginBottom: "0.45rem",
+    fontWeight: 600,
   };
 
-  return (
-    <>
-      {status === "success" && (
+  // Toast rendered directly into document.body to avoid navbar overlap and CSS stacking context issues
+  const toastElement = mounted && status === "success"
+    ? createPortal(
         <div
           role="status"
           aria-live="polite"
+          className="contact-toast"
           style={{
             position: "fixed",
-            top: 24,
-            right: 24,
-            zIndex: 1000,
-            width: "min(360px, calc(100vw - 32px))",
-            padding: "1rem 1.25rem",
-            border: "1px solid var(--line)",
-            borderRadius: 16,
-            background: "var(--card)",
-            boxShadow: "0 16px 48px rgba(0, 0, 0, 0.3)",
+            bottom: 28,
+            right: 28,
+            zIndex: 999999,
+            width: "min(390px, calc(100vw - 32px))",
+            padding: "1.1rem 1.35rem",
+            border: "1px solid rgba(56, 189, 248, 0.5)",
+            borderRadius: 18,
+            background: "rgba(8, 16, 32, 0.96)",
+            backdropFilter: "blur(20px)",
+            WebkitBackdropFilter: "blur(20px)",
+            boxShadow: "0 20px 50px rgba(0, 0, 0, 0.75), 0 0 24px rgba(14, 165, 233, 0.3)",
+            animation: "slideInToast 0.35s var(--ease)",
           }}
         >
-          <div style={{ display: "flex", alignItems: "flex-start", gap: "0.8rem" }}>
-            <span aria-hidden="true" style={{ color: "#86efac", fontSize: "1.2rem", lineHeight: 1 }}>✓</span>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700, marginBottom: "0.25rem" }}>Message sent!</div>
-              <div style={{ color: "var(--mute)", fontSize: "0.85rem" }}>
-                I&apos;ll get back to you at <strong style={{ color: "var(--ink)" }}>{PROFILE.email}</strong> shortly.
+          <div style={{ display: "flex", alignItems: "flex-start", gap: "0.85rem" }}>
+            <span aria-hidden="true" style={{ color: "#38bdf8", fontSize: "1.3rem", lineHeight: 1 }}>✓</span>
+            <div style={{ flex: 1, textAlign: "left" }}>
+              <div style={{ fontWeight: 700, fontSize: "0.95rem", color: "#f0f6ff", marginBottom: "0.2rem" }}>
+                Message transmitted successfully!
+              </div>
+              <div style={{ color: "var(--mute)", fontSize: "0.84rem", lineHeight: 1.45 }}>
+                Thank you! I will reply directly to your email shortly.
               </div>
             </div>
             <button
               type="button"
               onClick={() => setStatus("idle")}
               aria-label="Dismiss notification"
-              style={{ color: "var(--mute)", fontSize: "1.1rem", lineHeight: 1 }}
+              style={{ color: "var(--mute)", fontSize: "1.2rem", lineHeight: 1, padding: "0 4px", cursor: "pointer" }}
             >
               ×
             </button>
           </div>
-        </div>
-      )}
+        </div>,
+        document.body
+      )
+    : null;
+
+  return (
+    <>
+      {toastElement}
 
       <form
-      className="contact-form"
-      onSubmit={handleSubmit}
-      style={{
-        width: "100%",
-        maxWidth: 560,
-        display: "flex",
-        flexDirection: "column",
-        gap: "1.2rem",
-      }}
-    >
-      {/* Row: name + email */}
-      <div className="contact-form-row">
-        <div className="contact-form-field">
-          <label htmlFor="contact-name" style={labelStyle}>Name</label>
-          <input
-            className="contact-form-control"
-            id="contact-name"
-            type="text"
-            required
-            placeholder="Your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            style={inputStyle}
-            onFocus={(e) => (e.currentTarget.style.borderColor = "var(--ink-2)")}
-            onBlur={(e)  => (e.currentTarget.style.borderColor = "var(--line)")}
-          />
-        </div>
-        <div className="contact-form-field">
-          <label htmlFor="contact-email" style={labelStyle}>Email</label>
-          <input
-            className="contact-form-control"
-            id="contact-email"
-            type="email"
-            required
-            placeholder="your@email.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={inputStyle}
-            onFocus={(e) => (e.currentTarget.style.borderColor = "var(--ink-2)")}
-            onBlur={(e)  => (e.currentTarget.style.borderColor = "var(--line)")}
-          />
-        </div>
-      </div>
-
-      {/* Message */}
-      <div>
-        <label htmlFor="contact-message" style={labelStyle}>Message</label>
-        <textarea
-          className="contact-form-control"
-          id="contact-message"
-          required
-          rows={5}
-          placeholder="Tell me about your project..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          style={{ ...inputStyle, resize: "vertical", minHeight: 120 }}
-          onFocus={(e) => (e.currentTarget.style.borderColor = "var(--ink-2)")}
-          onBlur={(e)  => (e.currentTarget.style.borderColor = "var(--line)")}
-        />
-      </div>
-
-      {/* Error */}
-      {status === "error" && (
-        <p role="alert" style={{ fontSize: "0.85rem", color: "#f87171", marginTop: "-0.5rem" }}>
-          Something went wrong. Try emailing me directly at{" "}
-          <a href={`mailto:${PROFILE.email}`} style={{ textDecoration: "underline" }}>
-            {PROFILE.email}
-          </a>
-        </p>
-      )}
-
-      <button
-        type="submit"
-        className="btn-primary"
-        disabled={status === "sending"}
-        style={{ opacity: status === "sending" ? 0.6 : 1 }}
+        className="contact-form glass-card"
+        onSubmit={handleSubmit}
+        style={{
+          width: "100%",
+          maxWidth: 600,
+          margin: "0 auto",
+          display: "flex",
+          flexDirection: "column",
+          gap: "1.3rem",
+          padding: "clamp(1.5rem, 4vw, 2.5rem)",
+          textAlign: "left",
+        }}
       >
-        {status === "sending" ? "Sending…" : "Send message →"}
-      </button>
+        {/* Row: name + email */}
+        <div className="contact-form-row">
+          <div className="contact-form-field">
+            <label htmlFor="contact-name" style={labelStyle}>Your Name</label>
+            <input
+              className="contact-form-control"
+              id="contact-name"
+              type="text"
+              required
+              placeholder="e.g. Sarah Connor"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              style={inputStyle}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "#38bdf8";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(56, 189, 248, 0.25)";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "rgba(125, 211, 252, 0.16)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            />
+          </div>
+          <div className="contact-form-field">
+            <label htmlFor="contact-email" style={labelStyle}>Your Email Address</label>
+            <input
+              className="contact-form-control"
+              id="contact-email"
+              type="email"
+              required
+              placeholder="sarah@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={inputStyle}
+              onFocus={(e) => {
+                e.currentTarget.style.borderColor = "#38bdf8";
+                e.currentTarget.style.boxShadow = "0 0 0 3px rgba(56, 189, 248, 0.25)";
+              }}
+              onBlur={(e) => {
+                e.currentTarget.style.borderColor = "rgba(125, 211, 252, 0.16)";
+                e.currentTarget.style.boxShadow = "none";
+              }}
+            />
+          </div>
+        </div>
+
+        {/* Message area */}
+        <div>
+          <label htmlFor="contact-message" style={labelStyle}>Your Message or Project Details</label>
+          <textarea
+            className="contact-form-control"
+            id="contact-message"
+            required
+            rows={5}
+            placeholder="Tell me about your application, architecture requirements, or project vision..."
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            style={{ ...inputStyle, resize: "vertical", minHeight: 130 }}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = "#38bdf8";
+              e.currentTarget.style.boxShadow = "0 0 0 3px rgba(56, 189, 248, 0.25)";
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = "rgba(125, 211, 252, 0.16)";
+              e.currentTarget.style.boxShadow = "none";
+            }}
+          />
+        </div>
+
+        {/* Error Notification */}
+        {status === "error" && (
+          <p role="alert" style={{ fontSize: "0.85rem", color: "#f87171", margin: 0 }}>
+            Unable to send message via form endpoint. Please send directly to{" "}
+            <a href={`mailto:${PROFILE.email}`} style={{ textDecoration: "underline", color: "#fca5a5" }}>
+              {PROFILE.email}
+            </a>
+          </p>
+        )}
+
+        <button
+          type="submit"
+          className="btn-primary"
+          disabled={status === "sending"}
+          style={{
+            alignSelf: "flex-start",
+            opacity: status === "sending" ? 0.7 : 1,
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "0.6rem",
+          }}
+        >
+          {status === "sending" ? (
+            <>
+              <span
+                style={{
+                  width: 14,
+                  height: 14,
+                  borderRadius: "50%",
+                  border: "2px solid #040914",
+                  borderTopColor: "transparent",
+                  animation: "spin 0.8s linear infinite",
+                  display: "inline-block",
+                }}
+              />
+              <span>Transmitting message...</span>
+            </>
+          ) : (
+            <>
+              <span>Send Message</span>
+              <span aria-hidden="true" style={{ fontSize: "1.1rem" }}>→</span>
+            </>
+          )}
+        </button>
       </form>
     </>
   );
 }
 
-// ─── Main section ─────────────────────────────────────────────────────────────
+// ─── Main Contact Section ─────────────────────────────────────────────────────
 export default function Contact() {
   const [copied, setCopied] = useState(false);
 
@@ -270,7 +327,7 @@ export default function Contact() {
     try {
       await navigator.clipboard.writeText(PROFILE.email);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2200);
+      setTimeout(() => setCopied(false), 2400);
     } catch {}
   };
 
@@ -278,10 +335,14 @@ export default function Contact() {
     <section
       id="contact"
       className="section-pad"
-      style={{ borderTop: "1px solid var(--line)" }}
+      style={{ borderTop: "1px solid rgba(125, 211, 252, 0.12)", position: "relative" }}
     >
       <div className="container">
-        <span className="section-tag rv">06 — Contact</span>
+        <span className="section-tag rv">
+          <span>05</span>
+          <span>—</span>
+          <span>Connect</span>
+        </span>
 
         <div
           style={{
@@ -293,12 +354,28 @@ export default function Contact() {
           }}
         >
           <h2
-            className="heading-xl rv"
-            style={{ "--i": 1, lineHeight: 1.05, maxWidth: "800px" } as React.CSSProperties}
+            className="rv"
+            style={{
+              "--i": 1,
+              lineHeight: 1.08,
+              maxWidth: "780px",
+              fontSize: "clamp(2.2rem, 5vw, 4.4rem)",
+              fontWeight: 800,
+              letterSpacing: "-0.035em",
+              color: "var(--ink)",
+            } as React.CSSProperties}
           >
-            <HopText text="Let's build" />
-            <br />
-            <HopText text="something together." />
+            Let&apos;s build{" "}
+            <span
+              style={{
+                background: "linear-gradient(135deg, #bae6fd 0%, #38bdf8 50%, #60a5fa 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              something extraordinary
+            </span>{" "}
+            together.
           </h2>
 
           <SpinBadge />
@@ -313,27 +390,29 @@ export default function Contact() {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "1rem",
+              gap: "1.2rem",
               width: "100%",
-              maxWidth: 560,
-              color: "var(--faint)",
-              fontSize: "0.75rem",
+              maxWidth: 580,
+              color: "var(--mute)",
+              fontSize: "0.74rem",
               fontFamily: "'JetBrains Mono', monospace",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
             }}
           >
-            <div style={{ flex: 1, height: 1, background: "var(--line)" }} />
+            <div style={{ flex: 1, height: 1, background: "rgba(125, 211, 252, 0.12)" }} />
             or reach out directly
-            <div style={{ flex: 1, height: 1, background: "var(--line)" }} />
+            <div style={{ flex: 1, height: 1, background: "rgba(125, 211, 252, 0.12)" }} />
           </div>
 
-          {/* Email + copy */}
+          {/* Email + Quick Copy Button */}
           <div
             className="rv"
             style={{
               "--i": 3,
               display: "flex",
               alignItems: "center",
-              gap: "1rem",
+              gap: "1.2rem",
               flexWrap: "wrap",
               justifyContent: "center",
             } as React.CSSProperties}
@@ -341,31 +420,41 @@ export default function Contact() {
             <a
               href={`mailto:${PROFILE.email}`}
               style={{
-                fontSize: "clamp(0.9rem, 2vw, 1.2rem)",
+                fontSize: "clamp(1rem, 2.2vw, 1.4rem)",
                 fontWeight: 700,
+                color: "#f0f6ff",
                 textDecoration: "underline",
                 textUnderlineOffset: "6px",
                 letterSpacing: "-0.02em",
+                transition: "color 0.2s var(--ease)",
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#7dd3fc")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#f0f6ff")}
             >
               {PROFILE.email}
             </a>
             <button
               onClick={copy}
               aria-live="polite"
-              aria-label={copied ? "Email copied" : "Copy email"}
+              aria-label={copied ? "Email copied" : "Copy email address"}
               className="btn-outline"
-              style={{ fontSize: "0.8rem", padding: "0.4rem 0.9rem" }}
+              style={{
+                fontSize: "0.82rem",
+                padding: "0.5rem 1.1rem",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.4rem",
+              }}
             >
-              {copied ? "Copied ✓" : "Copy"}
+              <span>{copied ? "✓" : "📋"}</span>
+              <span>{copied ? "Copied to clipboard!" : "Copy Email"}</span>
             </button>
           </div>
-
         </div>
       </div>
 
       {/* Footer */}
-      <footer style={{ borderTop: "1px solid var(--line)", marginTop: "6rem", paddingTop: "2rem" }}>
+      <footer style={{ borderTop: "1px solid rgba(125, 211, 252, 0.12)", marginTop: "6rem", paddingTop: "2.5rem" }}>
         <div
           className="container"
           style={{
@@ -373,44 +462,70 @@ export default function Contact() {
             justifyContent: "space-between",
             alignItems: "center",
             flexWrap: "wrap",
-            gap: "1rem",
-            fontSize: "0.8rem",
+            gap: "1.2rem",
+            fontSize: "0.82rem",
             color: "var(--mute)",
           }}
         >
-          <span>© {new Date().getFullYear()} {PROFILE.name}</span>
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            style={{
-              fontSize: "0.8rem",
-              color: "var(--mute)",
-              textDecoration: "underline",
-              textUnderlineOffset: "3px",
-            }}
-          >
-            Back to top ↑
-          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <span style={{ fontWeight: 600, color: "var(--ink)" }}>{PROFILE.name}</span>
+            <span>·</span>
+            <span>Software Engineer & Full Stack Developer</span>
+          </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
+            <a
+              href={PROFILE.resumePath}
+              download
+              style={{ color: "var(--ink-2)", textDecoration: "underline" }}
+            >
+              Download Résumé
+            </a>
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "0.35rem",
+                color: "var(--ink)",
+                fontWeight: 600,
+                transition: "color 0.2s var(--ease)",
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#7dd3fc")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "var(--ink)")}
+            >
+              <span>Back to top</span>
+              <span aria-hidden="true">↑</span>
+            </button>
+          </div>
         </div>
       </footer>
 
       <style>{`
-        input::placeholder, textarea::placeholder { color: var(--faint); }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        @keyframes slideInToast {
+          from { transform: translateY(16px); opacity: 0; }
+          to   { transform: translateY(0); opacity: 1; }
+        }
+        input::placeholder, textarea::placeholder { color: var(--faint); opacity: 0.8; }
         input:focus, textarea:focus { outline: none; }
-        .contact-form { width: min(100%, 560px); margin-inline: auto; }
         .contact-form-row {
           display: grid;
           grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 1rem;
+          gap: 1.2rem;
         }
         .contact-form-field { min-width: 0; }
         .contact-form-control { width: 100%; min-width: 0; max-width: 100%; }
-        .contact-form > .btn-primary { align-self: flex-start; }
         @media (max-width: 640px) {
-          .contact-form-row { grid-template-columns: minmax(0, 1fr); }
-          .contact-form { gap: 1rem !important; }
-        }
-        @media (max-width: 480px) {
-          .contact-form > .btn-primary { align-self: stretch; justify-content: center; }
+          .contact-toast {
+            bottom: 20px !important;
+            right: 16px !important;
+            left: 16px !important;
+            width: auto !important;
+          }
+          .contact-form-row { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
         }
       `}</style>
     </section>
