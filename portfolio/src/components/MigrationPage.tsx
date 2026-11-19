@@ -12,6 +12,7 @@ export default function MigrationPage() {
   const [notifyStatus, setNotifyStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [notifyError, setNotifyError] = useState("");
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const successTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Toast Helper
   const showToast = (msg: string) => {
@@ -99,6 +100,10 @@ export default function MigrationPage() {
         localStorage.removeItem("kk_migration_notify");
       } catch {}
     }
+
+    return () => {
+      if (successTimeoutRef.current) clearTimeout(successTimeoutRef.current);
+    };
   }, []);
 
   // 3. Email Copy Action
@@ -147,6 +152,14 @@ export default function MigrationPage() {
         setSubscribed(true);
         setNotifyStatus("success");
         showToast(`Subscribed! Notification sent to ${PROFILE.email}`);
+
+        // Notification in the card disappears after 10s and resets the form
+        if (successTimeoutRef.current) clearTimeout(successTimeoutRef.current);
+        successTimeoutRef.current = setTimeout(() => {
+          setSubscribed(false);
+          setNotifyStatus("idle");
+          setEmailInput("");
+        }, 10000);
       } else {
         setNotifyStatus("error");
         setNotifyError("Delivery endpoint returned an error. Please try again.");
@@ -158,6 +171,7 @@ export default function MigrationPage() {
   };
 
   const handleResetSubscription = () => {
+    if (successTimeoutRef.current) clearTimeout(successTimeoutRef.current);
     setSubscribed(false);
     setNotifyStatus("idle");
     setNotifyError("");
