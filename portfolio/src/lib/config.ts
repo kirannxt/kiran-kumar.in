@@ -1,15 +1,11 @@
 /**
- * Site Configuration & Mode Toggles
+ * Site Configuration
  *
- * - underMigration: Set to `true` to display the "Website Under Migration" page by default.
- *                   Set to `false` to display the full interactive portfolio.
- *
- * Runtime overrides supported:
- * - URL Parameter: `?migration=true` or `?migration=false` (or `?migration=1` / `?migration=0`)
- * - In-browser toggle: Click the floating mode switch pill on the page.
+ * Set `underMigration: true` to display the "Website Under Migration" page.
+ * Set `underMigration: false` to display the full portfolio.
  */
 export const SITE_CONFIG = {
-  // Set to true to activate Migration Mode by default; set to false when live.
+  // Toggle this flag when you want to switch between the Migration page and Live Portfolio
   underMigration: true,
 
   // Default simulated progress for the migration bar (0 - 100)

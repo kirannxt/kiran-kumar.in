@@ -4,12 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { PROFILE } from "@/lib/data";
 import { SITE_CONFIG } from "@/lib/config";
 
-interface MigrationPageProps {
-  onToggleMode?: () => void;
-  isMigration?: boolean;
-}
-
-export default function MigrationPage({ onToggleMode }: MigrationPageProps) {
+export default function MigrationPage() {
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [emailInput, setEmailInput] = useState("");
@@ -321,29 +316,6 @@ export default function MigrationPage({ onToggleMode }: MigrationPageProps) {
             />
             <span>INFRASTRUCTURE MIGRATION ACTIVE</span>
           </div>
-
-          {/* Toggle Button to Switch to Live Portfolio */}
-          {onToggleMode && (
-            <button
-              onClick={onToggleMode}
-              className="btn-outline"
-              title="Click to preview the live portfolio"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "0.4rem",
-                padding: "0.4rem 0.9rem",
-                borderRadius: 999,
-                fontSize: "0.75rem",
-                fontFamily: "'JetBrains Mono', monospace",
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
-            >
-              <span>Preview Live Site</span>
-              <span aria-hidden="true">→</span>
-            </button>
-          )}
         </div>
       </header>
 
@@ -863,60 +835,6 @@ export default function MigrationPage({ onToggleMode }: MigrationPageProps) {
           <span style={{ color: "#38bdf8", fontSize: "1.2rem" }}>✓</span>
           <span>{toastMsg}</span>
         </div>
-      )}
-
-      {/* Floating Mode Switcher Button (Bottom Left) */}
-      {onToggleMode && (
-        <aside
-          aria-label="Site view toggle"
-          style={{
-            position: "fixed",
-            bottom: 20,
-            left: 20,
-            zIndex: 900,
-          }}
-        >
-          <button
-            type="button"
-            onClick={onToggleMode}
-            title="Toggle between Migration Page and Full Portfolio"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              padding: "0.45rem 0.9rem",
-              borderRadius: 999,
-              background: "rgba(6, 11, 20, 0.88)",
-              border: "1px solid rgba(56, 189, 248, 0.35)",
-              color: "var(--ink-2, #7dd3fc)",
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "0.72rem",
-              fontWeight: 600,
-              boxShadow: "0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(14, 165, 233, 0.2)",
-              backdropFilter: "blur(12px)",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = "#38bdf8";
-              e.currentTarget.style.transform = "translateY(-2px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = "rgba(56, 189, 248, 0.35)";
-              e.currentTarget.style.transform = "translateY(0)";
-            }}
-          >
-            <span
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: "#38bdf8",
-              }}
-            />
-            <span>Mode: Migration Active (Click to Switch)</span>
-          </button>
-        </aside>
       )}
     </div>
   );
