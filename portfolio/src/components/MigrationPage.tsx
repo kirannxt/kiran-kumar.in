@@ -11,16 +11,7 @@ export default function MigrationPage() {
   const [subscribed, setSubscribed] = useState(false);
   const [notifyStatus, setNotifyStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [notifyError, setNotifyError] = useState("");
-  const [progress, setProgress] = useState(SITE_CONFIG.defaultProgress || 88);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  const [logs, setLogs] = useState<Array<{ time: string; text: string; status: string }>>([
-    { time: "[14:50:12]", text: "Spawning high-throughput migration workers...", status: "[OK]" },
-    { time: "[14:51:04]", text: "Compiling Next.js 16 optimized runtime artifacts...", status: "[OK]" },
-    { time: "[14:52:45]", text: "Re-indexing SQL Server & MongoDB schemas...", status: "[OK]" },
-    { time: "[14:53:18]", text: "Broadcasting TLS / Anycast CDN routing rules...", status: "[SYNCING 88%]" },
-    { time: "[14:54:02]", text: "Health checks: zero-packet loss across 18 global edge locations", status: "[200 OK]" },
-  ]);
 
   // Toast Helper
   const showToast = (msg: string) => {
@@ -101,7 +92,7 @@ export default function MigrationPage() {
     };
   }, []);
 
-  // 2. Local Storage Notification Check & Dynamic Progress Ticker
+  // 2. Local Storage Notification Check
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedEmail = localStorage.getItem("kk_migration_notify");
@@ -111,42 +102,6 @@ export default function MigrationPage() {
         setEmailInput(savedEmail);
       }
     }
-
-    const progressTimer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev < 94) {
-          const delta = Math.random() > 0.6 ? 1 : 0;
-          return Math.min(94, prev + delta);
-        }
-        return prev;
-      });
-    }, 4500);
-
-    const extraLogs = [
-      { text: "Optimizing CSS modules & critical render path...", status: "[200 OK]" },
-      { text: "Verifying edge DNS propagation in Frankfurt (fra-1)...", status: "[VERIFIED]" },
-      { text: "Warming up distributed Redis caches for instantaneous page loads...", status: "[OK]" },
-      { text: "Validating SSL/TLS certificates for https://kiran-kumar.in...", status: "[VALID]" },
-      { text: "Performing automated Lighthouse audit: Score 99+ expected...", status: "[READY]" },
-      { text: "Synchronizing cross-region redundancy cluster...", status: "[SYNCED]" },
-    ];
-    let logIdx = 0;
-
-    const logTimer = setInterval(() => {
-      const now = new Date();
-      const timeStr = "[" + now.toTimeString().split(" ")[0] + "]";
-      const item = extraLogs[logIdx];
-      setLogs((prev) => [
-        ...prev.slice(-6),
-        { time: timeStr, text: item.text, status: item.status },
-      ]);
-      logIdx = (logIdx + 1) % extraLogs.length;
-    }, 7000);
-
-    return () => {
-      clearInterval(progressTimer);
-      clearInterval(logTimer);
-    };
   }, []);
 
   // 3. Email Copy Action
@@ -454,200 +409,6 @@ export default function MigrationPage() {
         >
           We are transitioning our core architecture to high-performance distributed cloud clusters, syncing production assets, and optimizing responsiveness. All services will be restored shortly.
         </p>
-
-        {/* Telemetry & Live Progress HUD */}
-        <div
-          className="glass-card"
-          style={{
-            width: "100%",
-            borderRadius: 20,
-            padding: "clamp(1.5rem, 3.5vw, 2.2rem)",
-            marginBottom: "2.5rem",
-            textAlign: "left",
-            position: "relative",
-            overflow: "hidden",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "0.8rem",
-              flexWrap: "wrap",
-              gap: "0.5rem",
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: "0.78rem",
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                color: "var(--ink-2, #7dd3fc)",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-              }}
-            >
-              <span>●</span> Migration Progress Status
-            </div>
-            <div
-              style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontSize: "1.1rem",
-                fontWeight: 700,
-                color: "#38bdf8",
-                textShadow: "0 0 12px rgba(56, 189, 248, 0.5)",
-              }}
-            >
-              {progress}%
-            </div>
-          </div>
-
-          <div
-            role="progressbar"
-            aria-valuenow={progress}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            style={{
-              width: "100%",
-              height: 8,
-              background: "rgba(14, 165, 233, 0.1)",
-              borderRadius: 999,
-              overflow: "hidden",
-              marginBottom: "1.8rem",
-              border: "1px solid rgba(125, 211, 252, 0.15)",
-              position: "relative",
-            }}
-          >
-            <div
-              style={{
-                height: "100%",
-                width: `${progress}%`,
-                background: "linear-gradient(90deg, #0284c7 0%, #38bdf8 50%, #7dd3fc 100%)",
-                borderRadius: 999,
-                transition: "width 0.4s var(--ease)",
-              }}
-            />
-          </div>
-
-          {/* 4 Step Pipeline Nodes */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-              gap: "1rem",
-              marginBottom: "1.8rem",
-            }}
-          >
-            {[
-              { status: "done", label: "Completed", title: "01. Cluster Provisioning" },
-              { status: "done", label: "Completed", title: "02. Data & Asset Sync" },
-              { status: "active", label: `In Progress (${progress}%)`, title: "03. Edge CDN & DNS" },
-              { status: "pending", label: "Standby", title: "04. Final Cutover" },
-            ].map((node, i) => (
-              <div
-                key={i}
-                style={{
-                  background: node.status === "active" ? "rgba(14, 165, 233, 0.08)" : "rgba(10, 19, 36, 0.65)",
-                  border: `1px solid ${
-                    node.status === "active"
-                      ? "rgba(56, 189, 248, 0.5)"
-                      : node.status === "done"
-                      ? "rgba(52, 211, 153, 0.25)"
-                      : "rgba(125, 211, 252, 0.12)"
-                  }`,
-                  borderRadius: 12,
-                  padding: "0.9rem 1rem",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "0.35rem",
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: "'JetBrains Mono', monospace",
-                    fontSize: "0.65rem",
-                    fontWeight: 600,
-                    letterSpacing: "0.06em",
-                    textTransform: "uppercase",
-                    color:
-                      node.status === "done"
-                        ? "#34d399"
-                        : node.status === "active"
-                        ? "#38bdf8"
-                        : "var(--faint, #3e536e)",
-                  }}
-                >
-                  {node.status === "done" ? "✓" : node.status === "active" ? "●" : "⏳"} {node.label}
-                </div>
-                <div style={{ fontSize: "0.82rem", fontWeight: 600, color: "var(--ink, #f0f6ff)" }}>
-                  {node.title}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Live Terminal Stream Console */}
-          <div
-            style={{
-              background: "#040810",
-              border: "1px solid rgba(125, 211, 252, 0.12)",
-              borderRadius: 12,
-              overflow: "hidden",
-              fontFamily: "'JetBrains Mono', monospace",
-              fontSize: "0.72rem",
-            }}
-          >
-            <div
-              style={{
-                background: "rgba(13, 22, 42, 0.95)",
-                padding: "0.5rem 0.85rem",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                borderBottom: "1px solid rgba(125, 211, 252, 0.08)",
-              }}
-            >
-              <div style={{ display: "flex", gap: 6 }}>
-                <span style={{ width: 9, height: 9, borderRadius: "50%", background: "#ef4444" }} />
-                <span style={{ width: 9, height: 9, borderRadius: "50%", background: "#f59e0b" }} />
-                <span style={{ width: 9, height: 9, borderRadius: "50%", background: "#10b981" }} />
-              </div>
-              <div style={{ color: "var(--mute, #7c90aa)", fontSize: "0.65rem" }}>
-                live-stream://kiran-kumar.in/migration-daemon
-              </div>
-              <div style={{ color: "#38bdf8", fontSize: "0.65rem" }}>LIVE FEED</div>
-            </div>
-
-            <div
-              style={{
-                padding: "0.9rem 1.1rem",
-                maxHeight: 140,
-                overflowY: "auto",
-                color: "#94a3b8",
-                lineHeight: 1.7,
-              }}
-            >
-              {logs.map((log, i) => (
-                <div key={i} style={{ display: "flex", gap: "0.6rem" }}>
-                  <span style={{ color: "var(--faint, #3e536e)" }}>{log.time}</span>
-                  <span style={{ flex: 1 }}>{log.text}</span>
-                  <span
-                    style={{
-                      color: log.status.includes("OK") || log.status.includes("VERIFIED") ? "#34d399" : "#38bdf8",
-                      fontWeight: 600,
-                    }}
-                  >
-                    {log.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
 
         {/* Action Panel: Launch Notification + Direct Inquiries */}
         <div
