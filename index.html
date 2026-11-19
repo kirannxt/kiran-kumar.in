@@ -887,34 +887,29 @@
       });
     }
 
-    // 3. Notify Form Submission with Local Storage Persistence
+    // 3. Notify Form Submission with Real Email Delivery (Fresh on Every Page Refresh)
     const notifyForm = document.getElementById('notifyForm');
     const notifyEmail = document.getElementById('notifyEmail');
     const notifyBtn = document.getElementById('notifyBtn');
     const formFeedback = document.getElementById('formFeedback');
 
-    if (localStorage.getItem('kk_migration_notify')) {
-      if (formFeedback) {
-        formFeedback.style.display = 'block';
-        formFeedback.innerHTML = '✓ You are already subscribed (' + localStorage.getItem('kk_migration_notify') + '). <a href="#" id="resetNotifyLink" style="color:#7dd3fc; text-decoration:underline; margin-left:6px;">Change</a>';
-        const resetLink = document.getElementById('resetNotifyLink');
-        if (resetLink) {
-          resetLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            localStorage.removeItem('kk_migration_notify');
-            if (notifyEmail) { notifyEmail.disabled = false; notifyEmail.value = ''; }
-            if (notifyBtn) { notifyBtn.disabled = false; notifyBtn.innerHTML = '<span>Notify Me</span> <span aria-hidden="true">→</span>'; }
-            formFeedback.style.display = 'none';
-          });
-        }
+    // Always clear any stale subscription on page load so it is fresh on every refresh
+    try {
+      localStorage.removeItem('kk_migration_notify');
+    } catch (e) {}
+
+    function resetFormState() {
+      if (notifyEmail) {
+        notifyEmail.disabled = false;
+        notifyEmail.value = '';
       }
       if (notifyBtn) {
-        notifyBtn.disabled = true;
-        notifyBtn.innerHTML = '<span>✓ Subscribed</span>';
+        notifyBtn.disabled = false;
+        notifyBtn.innerHTML = '<span>Notify Me</span> <span aria-hidden="true">→</span>';
       }
-      if (notifyEmail) {
-        notifyEmail.value = localStorage.getItem('kk_migration_notify');
-        notifyEmail.disabled = true;
+      if (formFeedback) {
+        formFeedback.style.display = 'none';
+        formFeedback.innerHTML = '';
       }
     }
 
@@ -950,12 +945,19 @@
           });
 
           if (res.ok) {
-            localStorage.setItem('kk_migration_notify', email);
             notifyBtn.innerHTML = '<span>✓ Subscribed</span>';
             formFeedback.style.display = 'block';
             formFeedback.style.color = '#34d399';
-            formFeedback.innerHTML = '✓ Subscribed! An email notification has been dispatched to kiran.nxt19@gmail.com.';
+            formFeedback.innerHTML = '✓ Subscribed! An email notification has been dispatched to kiran.nxt19@gmail.com. <a href="#" id="resetNotifyLink" style="color:#7dd3fc; text-decoration:underline; margin-left:8px;">Submit another email</a>';
             showToast('Notification alert dispatched to kiran.nxt19@gmail.com');
+
+            const resetLink = document.getElementById('resetNotifyLink');
+            if (resetLink) {
+              resetLink.addEventListener('click', (ev) => {
+                ev.preventDefault();
+                resetFormState();
+              });
+            }
           } else {
             notifyBtn.disabled = false;
             notifyEmail.disabled = false;

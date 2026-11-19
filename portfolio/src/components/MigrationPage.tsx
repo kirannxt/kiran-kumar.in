@@ -92,15 +92,12 @@ export default function MigrationPage() {
     };
   }, []);
 
-  // 2. Local Storage Notification Check
+  // 2. Clear any stale cached notification on mount so the form is fresh every time
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const savedEmail = localStorage.getItem("kk_migration_notify");
-      if (savedEmail) {
-        setSubscribed(true);
-        setNotifyStatus("success");
-        setEmailInput(savedEmail);
-      }
+      try {
+        localStorage.removeItem("kk_migration_notify");
+      } catch {}
     }
   }, []);
 
@@ -147,9 +144,6 @@ export default function MigrationPage() {
       });
 
       if (res.ok) {
-        if (typeof window !== "undefined") {
-          localStorage.setItem("kk_migration_notify", email);
-        }
         setSubscribed(true);
         setNotifyStatus("success");
         showToast(`Subscribed! Notification sent to ${PROFILE.email}`);
@@ -168,9 +162,6 @@ export default function MigrationPage() {
     setNotifyStatus("idle");
     setNotifyError("");
     setEmailInput("");
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("kk_migration_notify");
-    }
   };
 
   return (
