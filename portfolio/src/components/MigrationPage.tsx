@@ -9,6 +9,8 @@ export default function MigrationPage() {
   const [copied, setCopied] = useState(false);
   const [emailInput, setEmailInput] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [notifyStatus, setNotifyStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [notifyError, setNotifyError] = useState("");
   const [progress, setProgress] = useState(SITE_CONFIG.defaultProgress || 88);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -105,6 +107,7 @@ export default function MigrationPage() {
       const savedEmail = localStorage.getItem("kk_migration_notify");
       if (savedEmail) {
         setSubscribed(true);
+        setNotifyStatus("success");
         setEmailInput(savedEmail);
       }
     }
@@ -158,17 +161,61 @@ export default function MigrationPage() {
     }
   };
 
-  // 4. Form Submit Action
-  const handleNotifySubmit = (e: React.FormEvent) => {
+  // 4. Form Submit Action with real email delivery to PROFILE.email
+  const handleNotifySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const email = emailInput.trim();
     if (!email) return;
 
-    if (typeof window !== "undefined") {
-      localStorage.setItem("kk_migration_notify", email);
+    setNotifyStatus("sending");
+    setNotifyError("");
+
+    try {
+      const res = await fetch(`https://formsubmit.co/ajax/${PROFILE.email}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          name: "Launch Notification Subscriber",
+          subscriber_email: email,
+          email: email,
+          _replyto: email,
+          _subject: `🚀 New Launch Notification Subscriber: ${email}`,
+          source: "kiran-kumar.in Website Migration Page",
+          timestamp: new Date().toLocaleString(),
+          message: `A visitor has subscribed to the launch alerts on kiran-kumar.in:\n\nEmail: ${email}\nRequested Notification: Immediate alert when website migration completes.`,
+          _template: "table",
+          _captcha: "false",
+        }),
+      });
+
+      if (res.ok) {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("kk_migration_notify", email);
+        }
+        setSubscribed(true);
+        setNotifyStatus("success");
+        showToast(`Subscribed! Notification sent to ${PROFILE.email}`);
+      } else {
+        setNotifyStatus("error");
+        setNotifyError("Delivery endpoint returned an error. Please try again.");
+      }
+    } catch {
+      setNotifyStatus("error");
+      setNotifyError("Network error. Please check your connection and try again.");
     }
-    setSubscribed(true);
-    showToast(`Launch alert registered for ${email}`);
+  };
+
+  const handleResetSubscription = () => {
+    setSubscribed(false);
+    setNotifyStatus("idle");
+    setNotifyError("");
+    setEmailInput("");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("kk_migration_notify");
+    }
   };
 
   return (
@@ -645,9 +692,10 @@ export default function MigrationPage() {
                 type="email"
                 required
                 value={emailInput}
-                disabled={subscribed}
+                disabled={notifyStatus === "sending" || (subscribed && notifyStatus === "success")}
                 onChange={(e) => setEmailInput(e.target.value)}
                 placeholder="developer@example.com"
+                aria-label="Your email address for launch alerts"
                 style={{
                   flex: 1,
                   minWidth: 160,
@@ -662,30 +710,99 @@ export default function MigrationPage() {
               />
               <button
                 type="submit"
-                disabled={subscribed}
+                disabled={notifyStatus === "sending" || (subscribed && notifyStatus === "success")}
                 className="btn-primary"
                 style={{
                   fontSize: "0.85rem",
                   padding: "0.75rem 1.4rem",
                   borderRadius: 999,
                   whiteSpace: "nowrap",
-                  opacity: subscribed ? 0.6 : 1,
-                  cursor: subscribed ? "not-allowed" : "pointer",
+                  opacity: notifyStatus === "sending" ? 0.7 : subscribed ? 0.8 : 1,
+                  cursor: notifyStatus === "sending" || subscribed ? "not-allowed" : "pointer",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
                 }}
               >
-                {subscribed ? "✓ Subscribed" : "Notify Me →"}
+                {notifyStatus === "sending" ? (
+                  <>
+                    <span
+                      style={{
+                        width: 12,
+                        height: 12,
+                        borderRadius: "50%",
+                        border: "2px solid #040914",
+                        borderTopColor: "transparent",
+                        animation: "spin 0.8s linear infinite",
+                        display: "inline-block",
+                      }}
+                    />
+                    <span>Sending...</span>
+                  </>
+                ) : subscribed || notifyStatus === "success" ? (
+                  <span>✓ Subscribed</span>
+                ) : (
+                  <>
+                    <span>Notify Me</span>
+                    <span aria-hidden="true">→</span>
+                  </>
+                )}
               </button>
             </form>
-            {subscribed && (
-              <p
+
+            {/* Success state */}
+            {(subscribed || notifyStatus === "success") && (
+              <div
                 style={{
-                  marginTop: "0.6rem",
+                  marginTop: "0.85rem",
+                  padding: "0.65rem 0.95rem",
+                  borderRadius: 10,
+                  background: "rgba(52, 211, 153, 0.1)",
+                  border: "1px solid rgba(52, 211, 153, 0.3)",
                   fontSize: "0.78rem",
                   fontFamily: "'JetBrains Mono', monospace",
                   color: "#34d399",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: "0.5rem",
                 }}
               >
-                ✓ Registered! We will notify you upon live cutover.
+                <span>
+                  ✓ Registered! A subscriber alert has been sent to <strong>{PROFILE.email}</strong>.
+                </span>
+                <button
+                  type="button"
+                  onClick={handleResetSubscription}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    color: "var(--ink-2, #7dd3fc)",
+                    textDecoration: "underline",
+                    cursor: "pointer",
+                    fontSize: "0.72rem",
+                    fontFamily: "inherit",
+                    padding: 0,
+                  }}
+                >
+                  Change email
+                </button>
+              </div>
+            )}
+
+            {/* Error state */}
+            {notifyStatus === "error" && (
+              <p
+                role="alert"
+                style={{
+                  marginTop: "0.65rem",
+                  fontSize: "0.78rem",
+                  fontFamily: "'JetBrains Mono', monospace",
+                  color: "#f87171",
+                }}
+              >
+                {notifyError || "Unable to send email notification. Please try again."}
               </p>
             )}
           </div>

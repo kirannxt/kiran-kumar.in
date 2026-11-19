@@ -961,9 +961,22 @@
     if (localStorage.getItem('kk_migration_notify')) {
       if (formFeedback) {
         formFeedback.style.display = 'block';
-        formFeedback.textContent = '✓ You are already subscribed for launch alerts (' + localStorage.getItem('kk_migration_notify') + ')';
+        formFeedback.innerHTML = '✓ You are already subscribed (' + localStorage.getItem('kk_migration_notify') + '). <a href="#" id="resetNotifyLink" style="color:#7dd3fc; text-decoration:underline; margin-left:6px;">Change</a>';
+        const resetLink = document.getElementById('resetNotifyLink');
+        if (resetLink) {
+          resetLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('kk_migration_notify');
+            if (notifyEmail) { notifyEmail.disabled = false; notifyEmail.value = ''; }
+            if (notifyBtn) { notifyBtn.disabled = false; notifyBtn.innerHTML = '<span>Notify Me</span> <span aria-hidden="true">→</span>'; }
+            formFeedback.style.display = 'none';
+          });
+        }
       }
-      if (notifyBtn) notifyBtn.disabled = true;
+      if (notifyBtn) {
+        notifyBtn.disabled = true;
+        notifyBtn.innerHTML = '<span>✓ Subscribed</span>';
+      }
       if (notifyEmail) {
         notifyEmail.value = localStorage.getItem('kk_migration_notify');
         notifyEmail.disabled = true;
@@ -971,16 +984,59 @@
     }
 
     if (notifyForm) {
-      notifyForm.addEventListener('submit', (e) => {
+      notifyForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = notifyEmail.value.trim();
         if (!email) return;
 
-        localStorage.setItem('kk_migration_notify', email);
         notifyBtn.disabled = true;
         notifyEmail.disabled = true;
-        formFeedback.style.display = 'block';
-        showToast('Notification alert registered for ' + email);
+        notifyBtn.innerHTML = '<span>Sending...</span>';
+
+        try {
+          const res = await fetch('https://formsubmit.co/ajax/kiran.nxt19@gmail.com', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+              name: 'Launch Notification Subscriber',
+              subscriber_email: email,
+              email: email,
+              _replyto: email,
+              _subject: '🚀 New Launch Notification Subscriber: ' + email,
+              source: 'kiran-kumar.in (index.html)',
+              timestamp: new Date().toLocaleString(),
+              message: 'A visitor requested launch notifications on kiran-kumar.in:\n\nEmail: ' + email,
+              _template: 'table',
+              _captcha: 'false'
+            })
+          });
+
+          if (res.ok) {
+            localStorage.setItem('kk_migration_notify', email);
+            notifyBtn.innerHTML = '<span>✓ Subscribed</span>';
+            formFeedback.style.display = 'block';
+            formFeedback.style.color = '#34d399';
+            formFeedback.innerHTML = '✓ Subscribed! An email notification has been dispatched to kiran.nxt19@gmail.com.';
+            showToast('Notification alert dispatched to kiran.nxt19@gmail.com');
+          } else {
+            notifyBtn.disabled = false;
+            notifyEmail.disabled = false;
+            notifyBtn.innerHTML = '<span>Notify Me</span> <span aria-hidden="true">→</span>';
+            formFeedback.style.display = 'block';
+            formFeedback.style.color = '#f87171';
+            formFeedback.textContent = 'Unable to deliver notification right now. Please try again.';
+          }
+        } catch (err) {
+          notifyBtn.disabled = false;
+          notifyEmail.disabled = false;
+          notifyBtn.innerHTML = '<span>Notify Me</span> <span aria-hidden="true">→</span>';
+          formFeedback.style.display = 'block';
+          formFeedback.style.color = '#f87171';
+          formFeedback.textContent = 'Network error. Please check your connection and try again.';
+        }
       });
     }
 
