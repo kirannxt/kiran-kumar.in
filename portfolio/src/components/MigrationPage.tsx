@@ -654,7 +654,7 @@ export default function MigrationPage() {
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
                   <span style={{ color: "#38bdf8" }}>📄</span>
-                  <span>Download Résumé</span>
+                  <span>Download Resume</span>
                 </div>
                 <span style={{ fontSize: "0.75rem", color: "var(--mute, #7c90aa)" }}>PDF ↓</span>
               </a>
